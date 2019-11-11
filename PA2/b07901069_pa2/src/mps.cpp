@@ -2,7 +2,7 @@
 
 // =====================================
 
-void read_file(char *filename, int_array& chords) {
+void read_file(char *filename, u_short_array& chords) {
     std::fstream fin(filename);
     int i, n_vertices, n_chords, a, b;
     fin >> n_vertices;
@@ -16,23 +16,29 @@ void read_file(char *filename, int_array& chords) {
     fin.close();
 }
 
-void write_file(char *filename, chord_set& ans) {
+void write_file(char *filename,
+                u_short_array& ans_first,
+                u_short_array& ans_second
+                ) {
     std::fstream fout;
     fout.open(filename, std::ios::out);
-    fout << ans.size() << std::endl;
+    const int n = ans_first.size();
+    fout << n << std::endl;
     int i;
-    for (i = 0; i < ans.size(); ++i) {
-        fout << ans[i].first << " " << ans[i].second << std::endl;
+    for (i = 0; i < n; ++i) {
+        fout << ans_first[i] << " " << ans_second[i] << std::endl;
     }
     fout.close();
 }
 
-void compute_mps(int_array& chords, chord_set& ans) {
+void compute_mps(u_short_array& chords,
+                 u_short_array& ans_first,
+                 u_short_array& ans_second) {
     const int n_vertices = chords.size();
     // M[i][j]: number of chords in maximum planar subset between i and j
     // C[i][j]: whether the chord connected to j is selected
-    int_matrix M(n_vertices, int_array(n_vertices));
-    int_matrix C(n_vertices, int_array(n_vertices));
+    u_short_matrix M(n_vertices, u_short_array(n_vertices));
+    bool_matrix C(n_vertices, bool_array(n_vertices));
     int i, j, l, k, num;
 
     for (l = 1; l < n_vertices; ++l) {
@@ -64,33 +70,34 @@ void compute_mps(int_array& chords, chord_set& ans) {
         }
     }
 
-    get_ans(chords, ans, C, 0, n_vertices - 1);
+    get_ans(chords, ans_first, ans_second, C, 0, n_vertices - 1);
 }
 
 // back traverse to get answer(reverse), store it into ans
-void get_ans(int_array& chords,
-             chord_set& ans,
-             int_matrix& C,
+void get_ans(u_short_array& chords,
+             u_short_array& ans_first,
+             u_short_array& ans_second,
+             bool_matrix& C,
              int i,
              int j) {
     int k;
     if (i < j) {
         if (!C[i][j]) {
-            get_ans(chords, ans, C, i, j-1);
+            get_ans(chords, ans_first, ans_second, C, i, j-1);
         } else {
             k = chords[j];
             // case 3
             if (k == i) {
-                Chord chord(k, j);
-                ans.push_back(chord);
-                get_ans(chords, ans, C, i + 1, j - 1);
+                ans_first.push_back(k);
+                ans_second.push_back(j);
+                get_ans(chords, ans_first, ans_second, C, i + 1, j - 1);
             }
             // case 2
             if (i < k && k < j) {
-                get_ans(chords, ans, C, i, k - 1);
-                Chord chord(k, j);
-                ans.push_back(chord);
-                get_ans(chords, ans, C, k + 1, j - 1);
+                get_ans(chords, ans_first, ans_second, C, i, k - 1);
+                ans_first.push_back(k);
+                ans_second.push_back(j);
+                get_ans(chords, ans_first, ans_second, C, k + 1, j - 1);
             }
         }
     }

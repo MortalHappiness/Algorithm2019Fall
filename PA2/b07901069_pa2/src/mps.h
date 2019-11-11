@@ -2,20 +2,21 @@
 #define _MPS_H
 
 #include <vector>
-#include <utility>
 #include <fstream>
 
 // ========================================
 
-typedef std::vector<int> int_array;
-typedef std::vector<int_array> int_matrix;
-typedef std::pair<int, int> Chord;
-typedef std::vector<Chord> chord_set;
+// typedef std::vector<int> int_array;
+// typedef std::vector<int_array> int_matrix;
+typedef std::vector<unsigned short> u_short_array;
+typedef std::vector<u_short_array> u_short_matrix;
+typedef std::vector<bool> bool_array;
+typedef std::vector<bool_array> bool_matrix;
 
-void read_file(char*, int_array&);
-void write_file(char*, chord_set&);
-void compute_mps(int_array&, chord_set&);
-void get_ans(int_array&, chord_set&, int_matrix&, int, int);
+void read_file(char*, u_short_array&);
+void write_file(char*, u_short_array&, u_short_array&);
+void compute_mps(u_short_array&, u_short_array&, u_short_array&);
+void get_ans(u_short_array&, u_short_array&, u_short_array&, bool_matrix&, int, int);
 
 // ========================================
 

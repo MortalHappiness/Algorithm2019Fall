@@ -14,13 +14,14 @@ int main(int argc, char *argv[]) {
     }
 
     // Read file
-    int_array chords;
+    u_short_array chords;
     read_file(argv[1], chords);
 
     // Compute mps
-    chord_set ans;
-    compute_mps(chords, ans);
+    u_short_array ans_first;
+    u_short_array ans_second;
+    compute_mps(chords, ans_first, ans_second);
 
     // Write file
-    write_file(argv[2], ans);
+    write_file(argv[2], ans_first, ans_second);
 }
