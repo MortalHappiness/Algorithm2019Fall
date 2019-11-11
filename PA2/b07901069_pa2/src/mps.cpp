@@ -1,4 +1,5 @@
 #include "mps.h"
+#include <iostream>
 
 // =====================================
 
@@ -45,27 +46,25 @@ void compute_mps(u_short_array& chords,
         for (i = 0; i < n_vertices - l; ++i) {
             j = i + l;
             k = chords[j];
-            // case 3
-            if (k == i) {
-                M[i][j] = M[i+1][j-1] + 1;
-                C[i][j] = 1;
-            }
             // case 1
             if (k > j || k < i) {
                 M[i][j] = M[i][j-1];
-                C[i][j] = 0;
             }
             // case 2
             if (i < k && k < j) {
                 // not select (k, j) chord
                 M[i][j] = M[i][j-1];
-                C[i][j] = 0;
                 // select (k, j) chord
                 num = M[i][k-1] + M[k+1][j-1] + 1;
                 if (num > M[i][j]) {
                     M[i][j] = num;
                     C[i][j] = 1;
                 }
+            }
+            // case 3
+            if (k == i) {
+                M[i][j] = M[i+1][j-1] + 1;
+                C[i][j] = 1;
             }
         }
     }
