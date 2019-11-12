@@ -3,6 +3,11 @@
 
 // =====================================
 
+// maximum vertices = 40000, use 50000 as dummy value
+const unsigned short DUMMY = 50000;
+
+// =====================================
+
 void read_file(char *filename, u_short_array& chords) {
     std::fstream fin(filename);
     int i, n_vertices, n_chords, a, b;
@@ -32,42 +37,52 @@ void write_file(char *filename,
     fout.close();
 }
 
+unsigned short top_down_mps(u_short_array& chords,
+                            u_short_matrix& M,
+                            bool_matrix& C,
+                            int i,
+                            int j) {
+    if (i >= j) {
+        return 0;
+    }
+    if (M[i][j] != DUMMY) {
+        return M[i][j];
+    }
+    int k = chords[j];
+    // case 1
+    if (k > j || k < i) {
+        M[i][j] = top_down_mps(chords, M, C, i, j - 1);
+    }
+    // case 2
+    if (i < k && k < j) {
+        // not select (k, j) chord
+        M[i][j] = top_down_mps(chords, M, C, i, j - 1);
+        // select (k, j) chord
+        unsigned short num = top_down_mps(chords, M, C, i, k - 1) + 1 +
+                             top_down_mps(chords, M, C, k + 1, j - 1);
+        if (num > M[i][j]) {
+            M[i][j] = num;
+            C[i][j] = 1;
+        }
+    }
+    // case 3
+    if (k == i) {
+        M[i][j] = top_down_mps(chords, M, C, i + 1, j - 1) + 1;
+        C[i][j] = 1;
+    }
+    return M[i][j];
+}
+
 void compute_mps(u_short_array& chords,
                  u_short_array& ans_first,
                  u_short_array& ans_second) {
     const int n_vertices = chords.size();
     // M[i][j]: number of chords in maximum planar subset between i and j
     // C[i][j]: whether the chord connected to j is selected
-    u_short_matrix M(n_vertices, u_short_array(n_vertices));
+    u_short_matrix M(n_vertices, u_short_array(n_vertices, DUMMY));
     bool_matrix C(n_vertices, bool_array(n_vertices));
-    int i, j, l, k, num;
 
-    for (l = 1; l < n_vertices; ++l) {
-        for (i = 0; i < n_vertices - l; ++i) {
-            j = i + l;
-            k = chords[j];
-            // case 1
-            if (k > j || k < i) {
-                M[i][j] = M[i][j-1];
-            }
-            // case 2
-            if (i < k && k < j) {
-                // not select (k, j) chord
-                M[i][j] = M[i][j-1];
-                // select (k, j) chord
-                num = M[i][k-1] + M[k+1][j-1] + 1;
-                if (num > M[i][j]) {
-                    M[i][j] = num;
-                    C[i][j] = 1;
-                }
-            }
-            // case 3
-            if (k == i) {
-                M[i][j] = M[i+1][j-1] + 1;
-                C[i][j] = 1;
-            }
-        }
-    }
+    top_down_mps(chords, M, C, 0, n_vertices - 1);
 
     get_ans(chords, ans_first, ans_second, C, 0, n_vertices - 1);
 }
