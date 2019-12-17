@@ -59,13 +59,16 @@ void cycle_break(const G_type g_type,
                  ) {
     switch (g_type) {
         case U_U:
-            std::cout << "U_U" << std::endl;
+            BFS(n_vertices, edges_from, edges_to, ans_weight,
+                ans_edges_from, ans_edges_to, ans_weights);
             break;
         case W_U:
-            std::cout << "W_U" << std::endl;
+            MST(n_vertices, edges_from, edges_to, weights, ans_weight,
+                ans_edges_from, ans_edges_to, ans_weights);
             break;
         case W_D:
-            std::cout << "W_D" << std::endl;
+            // XXX(n_vertices, edges_from, edges_to, weights, ans_weight,
+            //     ans_edges_from, ans_edges_to, ans_weights);
             break;
         default:
             std::cout << "Wrong graph type!" << std::endl;

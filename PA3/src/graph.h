@@ -2,8 +2,19 @@
 #define _GRAPH_H
 
 #include <vector>
+#include <queue>
 
 // ======================================
+
+void BFS(const int,
+         std::vector<int>&, std::vector<int>&,
+         int&,
+         std::vector<int>&, std::vector<int>&, std::vector<int>&);
+
+void MST(const int,
+         std::vector<int>&, std::vector<int>&, std::vector<int>&,
+         int&,
+         std::vector<int>&, std::vector<int>&, std::vector<int>&);
 
 // ======================================
 
