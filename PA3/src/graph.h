@@ -16,6 +16,11 @@ void MST(const int,
          int&,
          std::vector<int>&, std::vector<int>&, std::vector<int>&);
 
+void XXX(const int,
+         std::vector<int>&, std::vector<int>&, std::vector<int>&,
+         int&,
+         std::vector<int>&, std::vector<int>&, std::vector<int>&);
+
 // ======================================
 
 #endif

@@ -63,7 +63,7 @@ void BFS(const int n_vertices,
     ans_weight = ans_edges_from.size();
 }
 
-// Minimum spanning tree
+// "Maximum" spanning tree
 // Break the cycles in weighted undirected graph.
 void MST(const int n_vertices,
          std::vector<int>& edges_from,
@@ -78,3 +78,14 @@ void MST(const int n_vertices,
 }
 
 // Break the cycles in weighted directed graph.
+void XXX(const int n_vertices,
+         std::vector<int>& edges_from,
+         std::vector<int>& edges_to,
+         std::vector<int>& weights,
+         int& ans_weight,
+         std::vector<int>& ans_edges_from,
+         std::vector<int>& ans_edges_to,
+         std::vector<int>& ans_weights
+         ) {
+    return;
+}
