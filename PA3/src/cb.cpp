@@ -49,37 +49,45 @@ void read_file(const char *filename,
 
 void cycle_break(const G_type g_type,
                  const int n_vertices,
-                 std::vector<int>& edges_from,
-                 std::vector<int>& edges_to,
-                 std::vector<int>& weights,
+                 const std::vector<int>& edges_from,
+                 const std::vector<int>& edges_to,
+                 const std::vector<int>& weights,
                  int& ans_weight,
                  std::vector<int>& ans_edges_from,
                  std::vector<int>& ans_edges_to,
                  std::vector<int>& ans_weights
                  ) {
-    switch (g_type) {
-        case U_U:
-            BFS(n_vertices, edges_from, edges_to, ans_weight,
-                ans_edges_from, ans_edges_to, ans_weights);
-            break;
-        case W_U:
-            MST(n_vertices, edges_from, edges_to, weights, ans_weight,
-                ans_edges_from, ans_edges_to, ans_weights);
-            break;
-        case W_D:
-            XXX(n_vertices, edges_from, edges_to, weights, ans_weight,
-                ans_edges_from, ans_edges_to, ans_weights);
-            break;
-        default:
-            std::cout << "Wrong graph type!" << std::endl;
-            break;
+
+    if (g_type == U_U) {
+        U_Graph G(n_vertices, edges_from, edges_to, weights);
+        BFS(G);
+        G.deleted_edges(ans_weight,
+                        ans_edges_from,
+                        ans_edges_to,
+                        ans_weights);
+    } else if (g_type == W_U) {
+        U_Graph G(n_vertices, edges_from, edges_to, weights);
+        MST(G);
+        G.deleted_edges(ans_weight,
+                        ans_edges_from,
+                        ans_edges_to,
+                        ans_weights);
+    } else if (g_type == W_D) {
+        // D_Graph G(n_vertices, edges_from, edges_to, weights);
+        // XXX(G);
+        // G.deleted_edges(ans_weight,
+        //                 ans_edges_from,
+        //                 ans_edges_to,
+        //                 ans_weights);
+    } else {
+        std::cout << "Wrong graph type!" << std::endl;
     }
 }
 
 void write_file(const char* filename, const int ans_weight,
-                std::vector<int>& ans_edges_from,
-                std::vector<int>& ans_edges_to,
-                std::vector<int>& ans_weights
+                const std::vector<int>& ans_edges_from,
+                const std::vector<int>& ans_edges_to,
+                const std::vector<int>& ans_weights
                 ) {
     std::fstream fout;
     fout.open(filename, std::ios::out);

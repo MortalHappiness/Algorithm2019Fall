@@ -16,14 +16,26 @@ enum G_type {
 
 // ========================================
 
-void read_file(const char*, G_type&,
-               std::vector<int>&, std::vector<int>&, std::vector<int>&, int&);
-void cycle_break(const G_type, const int,
-                 std::vector<int>&, std::vector<int>&, std::vector<int>&,
+void read_file(const char*,
+               G_type&,
+               std::vector<int>&,
+               std::vector<int>&,
+               std::vector<int>&,
+               int&);
+void cycle_break(const G_type,
+                 const int,
+                 const std::vector<int>&,
+                 const std::vector<int>&,
+                 const std::vector<int>&,
                  int&,
-                 std::vector<int>&, std::vector<int>&, std::vector<int>&);
-void write_file(const char*, const int,
-                std::vector<int>&, std::vector<int>&, std::vector<int>&);
+                 std::vector<int>&,
+                 std::vector<int>&,
+                 std::vector<int>&);
+void write_file(const char*,
+                const int,
+                const std::vector<int>&,
+                const std::vector<int>&,
+                const std::vector<int>&);
 
 // ========================================
 
