@@ -16,6 +16,8 @@ public:
     int extract_maximum(void);
     // Increase the key of an element and adjust the heap structure
     void increase_key(const int, const int);
+    // Whether the element is in heap
+    bool contains(const int label) { return (_elem_idx[label] != -1); };
     // Whether the heap is empty
     bool is_empty(void) { return !(_heap_size); };
 private:
@@ -78,7 +80,7 @@ void MaxHeap<T>::increase_key(const int label, const int key) {
         std::cout << "The element is not in heap!" << std::endl;
         return;
     }
-    (*(_elem_vec_ptr))[idx].key = key;
+    (*_elem_vec_ptr)[label].key = key;
     _sift_up(idx);
 }
 
