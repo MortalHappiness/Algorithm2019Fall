@@ -14,7 +14,7 @@ main.o: src/main.cpp
 cb.o: src/cb.cpp src/cb.h
 	$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
-graph.o: src/graph.cpp src/graph.h
+graph.o: src/graph.cpp src/graph.h src/heap.h
 	$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 .PHONY: clean

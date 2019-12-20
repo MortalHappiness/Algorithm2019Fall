@@ -3,70 +3,62 @@
 
 #include <vector>
 #include <queue>
+#include "heap.h"
 
 // ======================================
 
-// edge for undirected graph
+#define NIL -1
+#define INF 2147483647
+
+// ======================================
+
+typedef struct {
+    int key;
+    int parent;
+} Node;
+
 typedef struct {
     int to;
     int weight;
-    bool *remained; // whether edge should remain in the graph
-} U_Edge;
+} Edge;
 
-// edge for directed graph
-typedef struct {
-    int to;
-    int weight;
-    bool remained; // whether edge should remain in the graph
-} D_Edge;
-
-// undirected graph
-class U_Graph {
+class Graph {
 public:
     // constructor
-    U_Graph(const int,
-            const std::vector<int>&,
-            const std::vector<int>&,
-            const std::vector<int>&);
-    // destructor
-    ~U_Graph();
+    Graph(const int,
+          const bool,
+          const std::vector<int>&,
+          const std::vector<int>&,
+          const std::vector<int>&);
     // add edge
     void add_edge(int, int, int);
 
     // getters
-    int n_vertices() {return _n_vertices;};
-    int n_edges() {return _n_edges;};
-
-    // get the edges that need to be deleted
-    void deleted_edges(int&,
-                       std::vector<int>&,
-                       std::vector<int>&,
-                       std::vector<int>&);
+    int n_vertices(void) { return _n_vertices; };
+    int n_edges(void) { return _n_edges; };
+    bool is_directed(void) { return _is_directed; };
 
     // adjacency list
-    std::vector<std::vector<U_Edge>> adj_list;
+    std::vector<std::vector<Edge>> adj_list;
+    // vector of nodes
+    std::vector<Node> node_list;
 
 private:
     // number of vertices
     int _n_vertices;
     // number of edges
     int _n_edges;
-    // vector of allocated bool pointers for deleting
-    std::vector<bool*> _alloc_ptrs;
-};
-
-// directed graph
-class D_Graph {
-
+    // whether the graph is a directed graph
+    bool _is_directed;
 };
 
 // ======================================
 
-void BFS(U_Graph&);
+void BFS(Graph&);
 
-void MST(U_Graph&);
+void MST(Graph&);
 
-void XXX(D_Graph&);
+void XXX(Graph&);
 
 // ======================================
 

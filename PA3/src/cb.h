@@ -31,6 +31,15 @@ void cycle_break(const G_type,
                  std::vector<int>&,
                  std::vector<int>&,
                  std::vector<int>&);
+// get the edges that need to be deleted
+void deleted_edges(Graph&,
+                   const std::vector<int>&,
+                   const std::vector<int>&,
+                   const std::vector<int>&,
+                   int&,
+                   std::vector<int>&,
+                   std::vector<int>&,
+                   std::vector<int>&);
 void write_file(const char*,
                 const int,
                 const std::vector<int>&,
