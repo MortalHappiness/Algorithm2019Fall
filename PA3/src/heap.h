@@ -80,6 +80,10 @@ void MaxHeap<T>::increase_key(const int label, const int key) {
         std::cout << "The element is not in heap!" << std::endl;
         return;
     }
+    if (key < (*_elem_vec_ptr)[label].key) {
+        std::cout << "The new key is smaller than original key!" << std::endl;
+        return;
+    }
     (*_elem_vec_ptr)[label].key = key;
     _sift_up(idx);
 }
@@ -91,13 +95,13 @@ void MaxHeap<T>::_sift_down(int i) {
     right = left + 1;
     largest = i;
     if (left < _heap_size &&
-        (*(_elem_vec_ptr))[_heap[left]].key >
-        (*(_elem_vec_ptr))[_heap[i]].key) {
+        (*_elem_vec_ptr)[_heap[left]].key >
+        (*_elem_vec_ptr)[_heap[i]].key) {
         largest = left;
     }
     if (right < _heap_size &&
-        (*(_elem_vec_ptr))[_heap[right]].key >
-        (*(_elem_vec_ptr))[_heap[i]].key) {
+        (*_elem_vec_ptr)[_heap[right]].key >
+        (*_elem_vec_ptr)[_heap[largest]].key) {
         largest = right;
     }
     if (largest != i) {
@@ -118,8 +122,8 @@ void MaxHeap<T>::_sift_up(int i) {
     }
     int parent, i_label, p_label;
     parent = (i - 1) / 2;
-    if ((*(_elem_vec_ptr))[_heap[i]].key >
-        (*(_elem_vec_ptr))[_heap[parent]].key) {
+    if ((*_elem_vec_ptr)[_heap[i]].key >
+        (*_elem_vec_ptr)[_heap[parent]].key) {
         i_label = _heap[i];
         p_label = _heap[parent];
         _heap[i] = p_label;
