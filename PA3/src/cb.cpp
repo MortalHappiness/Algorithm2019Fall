@@ -3,8 +3,7 @@
 
 // ========================================
 
-void read_file(const char *filename,
-               G_type& g_type,
+bool read_file(const char *filename,
                std::vector<int>& edges_from,
                std::vector<int>& edges_to,
                std::vector<int>& weights,
@@ -29,25 +28,15 @@ void read_file(const char *filename,
 
     // determine the graph type
     if (graph_type == 'd') {
-        g_type = W_D;
-        return;
+        return 1;
     }
     if (graph_type == 'u') {
-        // examine whether the graph is unweighted
-        bool is_weighted = false;
-        for (i = 0; i < n_edges; ++i) {
-            if (weights[i] != 1) {
-                is_weighted = true;
-                break;
-            }
-        }
-        g_type = is_weighted ? W_U : U_U;
-        return;
+        return 0;
     }
     std::cout << "Wrong input graph type!" << std::endl;
 }
 
-void cycle_break(const G_type g_type,
+void cycle_break(const bool is_directed,
                  const int n_vertices,
                  const std::vector<int>& edges_from,
                  const std::vector<int>& edges_to,
@@ -57,61 +46,78 @@ void cycle_break(const G_type g_type,
                  std::vector<int>& ans_edges_to,
                  std::vector<int>& ans_weights
                  ) {
-    bool is_directed = 0;
-    if (g_type == W_D) {
-        is_directed = 1;
-    }
-    Graph G(n_vertices, is_directed, edges_from, edges_to, weights);
+    const int n_edges = edges_from.size();
+    int i;
+    if (!is_directed) {
+        std::vector<Edge> edge_list;
+        for (i = 0; i < n_edges; ++i) {
+            edge_list.push_back(Edge{edges_from[i], edges_to[i], weights[i]});
+        }
+        MST(n_vertices, edge_list,
+            ans_weight, ans_edges_from, ans_edges_to, ans_weights);
+    } else {
 
-    switch (g_type) {
-        case U_U:
-            BFS(G);
-            break;
-        case W_U:
-            MST(G);
-            break;
-        case W_D:
-            XXX(G);
-            break;
-        default:
-            std::cout << "Wrong graph type!" << std::endl;
-            break;
     }
-
-    deleted_edges(G,
-                  edges_from, edges_to, weights,
-                  ans_weight, ans_edges_from, ans_edges_to, ans_weights);
 }
 
-void deleted_edges(Graph& G,
-                   const std::vector<int>& edges_from,
-                   const std::vector<int>& edges_to,
-                   const std::vector<int>& weights,
-                   int& ans_weight,
-                   std::vector<int>& ans_edges_from,
-                   std::vector<int>& ans_edges_to,
-                   std::vector<int>& ans_weights) {
-    const int n_edges = G.n_edges();
-    int i, u, v, w;
+void MST(const int n_vertices,
+         std::vector<Edge>& edge_list,
+         int& ans_weight,
+         std::vector<int>& ans_edges_from,
+         std::vector<int>& ans_edges_to,
+         std::vector<int>& ans_weights
+         ) {
     ans_weight = 0;
+    int i, u, v, w;
+    const int n_edges = edge_list.size();
+
+    // -100 <= weight <= 100, nomalize to [0, 200]
     for (i = 0; i < n_edges; ++i) {
-        u = edges_from[i];
-        v = edges_to[i];
-        w = weights[i];
-        if (
-            // undirected
-            (!G.is_directed() &&
-                !(G.node_list[v].parent == u || G.node_list[u].parent == v))
-            ||
-            // directed
-            (G.is_directed() &&
-                (G.node_list[v].parent != u))
-            ) {
+        edge_list[i].weight += 100;
+    }
+
+    // sort the edges into "non-decreasing" order
+    std::vector<Edge> sorted_edge_list;
+    counting_sort(edge_list, sorted_edge_list, 200);
+
+    // for edges in "non-increasing" order, do Union-Find
+    Set set(n_vertices);
+    for (i = n_edges - 1; i >= 0; --i) {
+        u = sorted_edge_list[i].from;
+        v = sorted_edge_list[i].to;
+        if (set.Find(u) != set.Find(v)) {
+            set.Union(u, v);
+        } else {
+            // normalize the weight back to [-100, 100]
+            w = sorted_edge_list[i].weight - 100;
+            ans_weight += w;
             ans_edges_from.push_back(u);
             ans_edges_to.push_back(v);
             ans_weights.push_back(w);
-            ans_weight += w;
         }
+    }
+}
+
+void counting_sort(const std::vector<Edge>& input,
+                   std::vector<Edge>& output,
+                   int k) {
+    std::vector<int> aux(k + 1, 0);
+    const int n = input.size();
+    int i, w;
+    for (i = 0; i < n; ++i) {
+        w = input[i].weight;
+        ++aux[w];
+    }
+
+    for (i = 1; i <= k; ++i) {
+        aux[i] += aux[i-1];
+    }
+
+    output.resize(n);
+    for (i = n-1; i >= 0; --i) {
+        w = input[i].weight;
+        output[aux[w] - 1] = input[i];
+        --aux[w];
     }
 }
 

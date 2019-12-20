@@ -14,15 +14,15 @@ int main(int argc, char *argv[]) {
     }
 
     // Read file
-    G_type g_type;
     int n_vertices;
     std::vector<int> edges_from, edges_to, weights,
                      ans_edges_from, ans_edges_to, ans_weights;
-    read_file(argv[1], g_type, edges_from, edges_to, weights, n_vertices);
+    bool is_directed = read_file(argv[1],
+                            edges_from, edges_to, weights, n_vertices);
 
     // cycle breaking
     int ans_weight;
-    cycle_break(g_type, n_vertices, edges_from, edges_to, weights,
+    cycle_break(is_directed, n_vertices, edges_from, edges_to, weights,
                 ans_weight, ans_edges_from, ans_edges_to, ans_weights);
 
     // Write file

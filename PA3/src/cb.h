@@ -3,26 +3,27 @@
 
 #include <vector>
 #include <fstream>
-#include "graph.h"
+#include "set.h"
 
 // ========================================
 
-// graph type
-enum G_type {
-    U_U,   // unweighted undirected graph
-    W_U,   // weighted undirected graph
-    W_D    // weighted directed graph
-};
+typedef struct {
+    int from;
+    int to;
+    int weight;
+} Edge;
 
 // ========================================
 
-void read_file(const char*,
-               G_type&,
+// read the file and return whether the graph is directed graph
+bool read_file(const char*,
                std::vector<int>&,
                std::vector<int>&,
                std::vector<int>&,
                int&);
-void cycle_break(const G_type,
+
+// cycle breaking
+void cycle_break(const bool,
                  const int,
                  const std::vector<int>&,
                  const std::vector<int>&,
@@ -31,15 +32,21 @@ void cycle_break(const G_type,
                  std::vector<int>&,
                  std::vector<int>&,
                  std::vector<int>&);
-// get the edges that need to be deleted
-void deleted_edges(Graph&,
-                   const std::vector<int>&,
-                   const std::vector<int>&,
-                   const std::vector<int>&,
-                   int&,
-                   std::vector<int>&,
-                   std::vector<int>&,
-                   std::vector<int>&);
+
+// Kruskal's "Maximum" spanning tree algorithm
+void MST(const int,
+         std::vector<Edge>&,
+         int&,
+         std::vector<int>&,
+         std::vector<int>&,
+         std::vector<int>&);
+
+// counting sort(non-decreasing order)
+void counting_sort(const std::vector<Edge>&,
+                   std::vector<Edge>&,
+                   int);
+
+// write the output file
 void write_file(const char*,
                 const int,
                 const std::vector<int>&,

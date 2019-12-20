@@ -5,7 +5,7 @@ OPTFLAGS = -O3
 all: ./cb
 	@echo -n ""
 
-./cb: main.o cb.o graph.o
+./cb: main.o cb.o set.o
 	$(CC) $(OPTFLAGS) $^ -o $@
 
 main.o: src/main.cpp
@@ -14,7 +14,7 @@ main.o: src/main.cpp
 cb.o: src/cb.cpp src/cb.h
 	$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
-graph.o: src/graph.cpp src/graph.h src/heap.h
+set.o: src/set.cpp src/set.h
 	$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 .PHONY: clean
