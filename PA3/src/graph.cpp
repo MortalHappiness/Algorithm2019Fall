@@ -58,7 +58,23 @@ void BFS(Graph& G) {
 // "Maximum" spanning tree
 // Break the cycles in weighted undirected graph.
 void MST(Graph& G) {
-    return;
+    int i, u, v, w;
+    for (i = 0; i < G.n_vertices(); ++i) {
+        G.node_list[i].key = -INF;
+    }
+    G.node_list[0].key = 0;
+    MaxHeap<Node> heap(G.node_list);
+    while (!heap.is_empty()) {
+        u = heap.extract_maximum();
+        for (i = 0; i < G.adj_list[u].size(); ++i) {
+            v = G.adj_list[u][i].to;
+            w = G.adj_list[u][i].weight;
+            if (heap.contains(v) && w > G.node_list[v].key) {
+                G.node_list[v].parent = u;
+                heap.increase_key(v, w);
+            }
+        }
+    }
 }
 
 // Break the cycles in weighted directed graph.
