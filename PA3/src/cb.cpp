@@ -41,7 +41,7 @@ void cycle_break(const bool is_directed,
                  const std::vector<int>& edges_from,
                  const std::vector<int>& edges_to,
                  const std::vector<int>& weights,
-                 int& ans_weight,
+                 long long& ans_weight,
                  std::vector<int>& ans_edges_from,
                  std::vector<int>& ans_edges_to,
                  std::vector<int>& ans_weights
@@ -62,12 +62,12 @@ void cycle_break(const bool is_directed,
 
 void MST(const int n_vertices,
          std::vector<Edge>& edge_list,
-         int& ans_weight,
+         long long& ans_weight,
          std::vector<int>& ans_edges_from,
          std::vector<int>& ans_edges_to,
          std::vector<int>& ans_weights
          ) {
-    ans_weight = 0;
+    ans_weight = 0LL;
     int i, u, v, w;
     const int n_edges = edge_list.size();
 
@@ -90,7 +90,7 @@ void MST(const int n_vertices,
         } else {
             // normalize the weight back to [-100, 100]
             w = sorted_edge_list[i].weight - 100;
-            ans_weight += w;
+            ans_weight += static_cast<long long>(w);
             ans_edges_from.push_back(u);
             ans_edges_to.push_back(v);
             ans_weights.push_back(w);
@@ -121,7 +121,8 @@ void counting_sort(const std::vector<Edge>& input,
     }
 }
 
-void write_file(const char* filename, const int ans_weight,
+void write_file(const char* filename,
+                const long long ans_weight,
                 const std::vector<int>& ans_edges_from,
                 const std::vector<int>& ans_edges_to,
                 const std::vector<int>& ans_weights
@@ -130,13 +131,13 @@ void write_file(const char* filename, const int ans_weight,
     fout.open(filename, std::ios::out);
     const int n = ans_edges_from.size();
     if (n == 0) {
-        fout << 0 << std::endl;
+        fout << 0 << "\n";
     } else {
         int i;
-        fout << ans_weight << std::endl;
+        fout << ans_weight << "\n";
         for (i = 0; i < n; ++i) {
             fout << ans_edges_from[i] << " " << ans_edges_to[i] << " " <<
-                    ans_weights[i] << std::endl;
+                    ans_weights[i] << "\n";
         }
     }
 

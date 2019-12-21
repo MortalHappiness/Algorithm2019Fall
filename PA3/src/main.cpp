@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
                             edges_from, edges_to, weights, n_vertices);
 
     // cycle breaking
-    int ans_weight;
+    long long ans_weight;
     cycle_break(is_directed, n_vertices, edges_from, edges_to, weights,
                 ans_weight, ans_edges_from, ans_edges_to, ans_weights);
 

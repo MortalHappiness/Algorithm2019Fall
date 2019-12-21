@@ -28,7 +28,7 @@ void cycle_break(const bool,
                  const std::vector<int>&,
                  const std::vector<int>&,
                  const std::vector<int>&,
-                 int&,
+                 long long&,
                  std::vector<int>&,
                  std::vector<int>&,
                  std::vector<int>&);
@@ -36,7 +36,7 @@ void cycle_break(const bool,
 // Kruskal's "Maximum" spanning tree algorithm
 void MST(const int,
          std::vector<Edge>&,
-         int&,
+         long long&,
          std::vector<int>&,
          std::vector<int>&,
          std::vector<int>&);
@@ -48,7 +48,7 @@ void counting_sort(const std::vector<Edge>&,
 
 // write the output file
 void write_file(const char*,
-                const int,
+                const long long,
                 const std::vector<int>&,
                 const std::vector<int>&,
                 const std::vector<int>&);
