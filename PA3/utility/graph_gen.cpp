@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
     for (i = 0; i < E; ++i) {
         fout << edges[i].first << " "
              << edges[i].second << " "
-             << dis_w(gen) << std::endl;
+             << dis_w(gen) << "\n";
     }
     fout << 0;
     fout.close();
