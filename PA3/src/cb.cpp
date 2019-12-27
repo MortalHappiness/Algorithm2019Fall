@@ -170,25 +170,80 @@ void counting_sort(const std::vector<Edge>& input,
     }
 }
 
+int int_to_buf(char*& buffer, int n) {
+    if (n == 0) {
+        *buffer = '0';
+        ++buffer;
+        return 1;
+    }
+    int length = 0;
+    if (n < 0) {
+        *buffer = '-';
+        ++buffer;
+        ++length;
+        n = -n;
+    }
+    char *num_head = buffer;
+    while (n != 0) {
+        *buffer = (n % 10) + '0';
+        ++length;
+        ++buffer;
+        n /= 10;
+    }
+    // reverse
+    int start, end, temp;
+    start = 0;
+    end = buffer - num_head - 1;
+    while (start < end) {
+        temp = *(num_head + start);
+        *(num_head + start) = *(num_head + end);
+        *(num_head + end) = temp;
+        ++start;
+        --end;
+    }
+
+    return length;
+}
+
 void write_file(const char* filename,
                 const long long ans_weight,
                 const std::vector<int>& ans_edges_from,
                 const std::vector<int>& ans_edges_to,
                 const std::vector<int>& ans_weights
                 ) {
-    FILE *pFile;
-    pFile = fopen(filename, "w");
-
     const int n = ans_edges_from.size();
+    FILE *pFile;
+    pFile = fopen(filename, "wb");
+
     if (n == 0) {
         putc('0', pFile);
     } else {
         int i;
         fprintf(pFile, "%lld\n", ans_weight);
+
+        // allocate buffer
+        char *buffer;
+        // 19 = 6 + 1 + 6 + 1 + 4 + 1
+        //     6: max vertex bit(100000)
+        //     4: max weight bit(-100)
+        //     1: space and newline
+        const size_t maxbufsize = 19 * n;
+        buffer = (char*) malloc(sizeof(char) * maxbufsize);
+        if (buffer == NULL) { fputs("Memory error", stderr); }
+
+        // write into buffer
+        char *cur = buffer;
+        size_t length = 0;
         for (i = 0; i < n; ++i) {
-            fprintf(pFile, "%d %d %d\n",
-                    ans_edges_from[i], ans_edges_to[i], ans_weights[i]);
+            length += int_to_buf(cur, ans_edges_from[i]);
+            *cur = ' '; ++cur; ++length;
+            length += int_to_buf(cur, ans_edges_to[i]);
+            *cur = ' '; ++cur; ++length;
+            length += int_to_buf(cur, ans_weights[i]);
+            *cur = '\n'; ++cur; ++length;
         }
+        fwrite(buffer, sizeof(char), sizeof(char) * length, pFile);
+        free(buffer);
     }
 
     fclose(pFile);

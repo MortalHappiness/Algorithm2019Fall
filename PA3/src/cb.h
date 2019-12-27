@@ -49,6 +49,9 @@ void counting_sort(const std::vector<Edge>&,
                    std::vector<Edge>&,
                    int);
 
+// write integer into a char buffer, return the written length
+int int_to_buf(char*&, int);
+
 // write the output file
 void write_file(const char*,
                 const long long,
