@@ -1,5 +1,6 @@
 #include <iostream>
 #include "cb.h"
+#include "io.h"
 #include "../lib/tm_usage.h"
 #include <time.h>
 

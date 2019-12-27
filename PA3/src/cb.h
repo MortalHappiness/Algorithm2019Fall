@@ -2,7 +2,6 @@
 #define _CB_H
 
 #include <vector>
-#include <fstream>
 #include "set.h"
 
 // ========================================
@@ -14,16 +13,6 @@ typedef struct {
 } Edge;
 
 // ========================================
-
-// parse out an integer from the buffer (until a space or newline)
-int parse_int(char*&);
-
-// read the file and return whether the graph is directed graph
-bool read_file(const char*,
-               std::vector<int>&,
-               std::vector<int>&,
-               std::vector<int>&,
-               int&);
 
 // cycle breaking
 void cycle_break(const bool,
@@ -48,16 +37,6 @@ void MST(const int,
 void counting_sort(const std::vector<Edge>&,
                    std::vector<Edge>&,
                    int);
-
-// write integer into a char buffer, return the written length
-int int_to_buf(char*&, int);
-
-// write the output file
-void write_file(const char*,
-                const long long,
-                const std::vector<int>&,
-                const std::vector<int>&,
-                const std::vector<int>&);
 
 // ========================================
 

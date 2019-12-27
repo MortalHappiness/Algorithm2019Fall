@@ -8,13 +8,16 @@ all: ./cb
 	@echo -n ""
 
 # optimization version
-./cb: main.o cb.o set.o
+./cb: main.o cb.o io.o set.o
 	$(CC) $(OPTFLAGS) $^ -o $@
 
 main.o: src/main.cpp
 	$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 cb.o: src/cb.cpp src/cb.h
+	$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
+
+io.o: src/io.cpp src/io.h
 	$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 set.o: src/set.cpp src/set.h
@@ -24,8 +27,8 @@ set.o: src/set.cpp src/set.h
 time: ./cb_time
 	@echo -n ""
 
-./cb_time: time.o cb.o set.o lib
-	$(CC) $(OPTFLAGS) time.o cb.o set.o -ltm_usage -Llib -o $@
+./cb_time: time.o cb.o io.o set.o lib
+	$(CC) $(OPTFLAGS) time.o cb.o io.o set.o -ltm_usage -Llib -o $@
 
 time.o: src/time.cpp lib/tm_usage.h
 	$(CC) $(CFLAGS) $(OPTFLAGS) $< -Ilib -o $@
