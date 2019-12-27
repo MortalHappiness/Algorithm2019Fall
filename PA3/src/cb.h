@@ -15,6 +15,9 @@ typedef struct {
 
 // ========================================
 
+// parse out an integer from the buffer (until a space or newline)
+int parse_int(char*&);
+
 // read the file and return whether the graph is directed graph
 bool read_file(const char*,
                std::vector<int>&,

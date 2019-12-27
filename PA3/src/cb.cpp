@@ -1,7 +1,29 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include "cb.h"
 
 // ========================================
+
+int parse_int(char*& buffer) {
+    int num, i;
+    bool is_negative = 0;
+    if (*buffer == '-') {
+        ++buffer;
+        is_negative = 1;
+    }
+    num = 0;
+    while (1) {
+        if (*buffer == ' ' || *buffer == '\n') {
+            break;
+        }
+        num  = num * 10 + *buffer - '0';
+        ++buffer;
+    }
+    ++buffer;
+    if (is_negative) { num = -num; }
+    return num;
+}
 
 bool read_file(const char *filename,
                std::vector<int>& edges_from,
@@ -9,22 +31,49 @@ bool read_file(const char *filename,
                std::vector<int>& weights,
                int& n_vertices
                ) {
-    std::fstream fin(filename);
-
     char graph_type;
     int n_edges;
-    fin >> graph_type >> n_vertices >> n_edges;
 
-    int edge_from, edge_to, weight;
-    int i;
+    // read the file into a buffer
+    FILE *pFile;
+    size_t filesize, readsize;
+    char *buffer;
+
+    pFile = fopen(filename, "rb");
+    if (pFile == NULL) { fputs("File error", stderr); }
+
+    fseek(pFile, 0, SEEK_END);
+    filesize = ftell(pFile);
+    rewind(pFile);
+
+    buffer = (char*) malloc(sizeof(char) * filesize);
+    if (buffer == NULL) { fputs("Memory error", stderr); }
+
+    readsize = fread(buffer, 1, filesize, pFile);
+    if (readsize != filesize) { fputs("Reading error", stderr); }
+
+    fclose(pFile);
+
+    // parse the buffer
+    char *cur = buffer;
+    graph_type = *(cur);
+    cur += 2;
+
+    n_vertices = parse_int(cur);
+    n_edges = parse_int(cur);
+
+    int i, num;
 
     for (i = 0; i < n_edges; ++i) {
-        fin >> edge_from >> edge_to >> weight;
-        edges_from.push_back(edge_from);
-        edges_to.push_back(edge_to);
-        weights.push_back(weight);
+        num = parse_int(cur);
+        edges_from.push_back(num);
+        num = parse_int(cur);
+        edges_to.push_back(num);
+        num = parse_int(cur);
+        weights.push_back(num);
     }
-    fin.close();
+
+    free(buffer);
 
     // determine the graph type
     if (graph_type == 'd') {
@@ -127,19 +176,20 @@ void write_file(const char* filename,
                 const std::vector<int>& ans_edges_to,
                 const std::vector<int>& ans_weights
                 ) {
-    std::fstream fout;
-    fout.open(filename, std::ios::out);
+    FILE *pFile;
+    pFile = fopen(filename, "w");
+
     const int n = ans_edges_from.size();
     if (n == 0) {
-        fout << 0 << "\n";
+        putc('0', pFile);
     } else {
         int i;
-        fout << ans_weight << "\n";
+        fprintf(pFile, "%lld\n", ans_weight);
         for (i = 0; i < n; ++i) {
-            fout << ans_edges_from[i] << " " << ans_edges_to[i] << " " <<
-                    ans_weights[i] << "\n";
+            fprintf(pFile, "%d %d %d\n",
+                    ans_edges_from[i], ans_edges_to[i], ans_weights[i]);
         }
     }
 
-    fout.close();
+    fclose(pFile);
 }
