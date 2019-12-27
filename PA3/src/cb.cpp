@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits.h>
 #include "cb.h"
 
 // ========================================
@@ -23,7 +24,57 @@ void cycle_break(const bool is_directed,
         MST(n_vertices, edge_list,
             ans_weight, ans_edges_from, ans_edges_to, ans_weights);
     } else {
+        // directed graph cycle breaking
+        int from, to, weight;
+        ans_weight = 0;
+        // key = out_weight - in_weight
+        std::vector<int> node_keys(n_vertices, 0);
+        // linked list
+        std::list<Edge> edge_list;
+        for (i = 0; i < n_edges; ++i) {
+            from = edges_from[i];
+            to = edges_to[i];
+            weight = weights[i];
+            edge_list.push_back(Edge{from, to, weight});
+            node_keys[from] += weight;
+            node_keys[to] -= weight;
+        }
 
+        int idx, val, j;
+        std::list<Edge>::iterator iter;
+        for (i = 0; i < n_vertices; ++i) {
+            // extract maximum key
+            idx = 0;
+            val = INT_MIN;
+            for (j = 0; j < n_vertices; ++j) {
+                if (node_keys[j] > val) {
+                    idx = j;
+                    val = node_keys[j];
+                }
+            }
+            // set the key of the maximum key to INT_MIN
+            node_keys[idx] = INT_MIN;
+            // traverse the edge list to update key
+            iter = edge_list.begin();
+            while (iter != edge_list.end()) {
+                from = (*iter).from;
+                to = (*iter).to;
+                weight = (*iter).weight;
+                if (from == idx) {
+                    node_keys[to] += weight;
+                    iter = edge_list.erase(iter);
+                } else if (to == idx) {
+                    ans_edges_from.push_back(from);
+                    ans_edges_to.push_back(to);
+                    ans_weights.push_back(weight);
+                    ans_weight += weight;
+                    node_keys[from] -= weight;
+                    iter = edge_list.erase(iter);
+                } else {
+                    ++iter;
+                }
+            }
+        }
     }
 }
 

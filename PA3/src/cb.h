@@ -2,6 +2,7 @@
 #define _CB_H
 
 #include <vector>
+#include <list>
 #include "set.h"
 
 // ========================================
