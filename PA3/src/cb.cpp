@@ -100,9 +100,58 @@ void d_cb(const int n_vertices,
           std::vector<int>& ans_edges_to,
           std::vector<int>& ans_weights
          ) {
+    int i;
+    std::vector<heu_fun_ptr> heuristics = {&heuristic_1, &heuristic_2};
+    i = heuristics.size();
+    std::vector<std::list<Edge>> del_edges_vec(i);
+    std::list<Edge>::iterator iter;
+
+    // run different heuristics
+    for (i = 0; i < heuristics.size(); ++i) {
+        (*(heuristics[i]))(n_vertices,
+                           edges_from, edges_to, weights,
+                           del_edges_vec[i]);
+    }
+
+    // choose the heuristic that generate minimum weight
+    int idx = 0, cur_min = INT_MAX, sum;
+    for (i = 0; i < heuristics.size(); ++i) {
+        sum = sum_weights(del_edges_vec[i]);
+        if (sum < cur_min) {
+            idx = i;
+            cur_min = sum;
+        }
+    }
+    std::list<Edge> del_edges = del_edges_vec[idx];
+
+    // output deleted edges to answer
+    ans_weight = 0;
+    for (iter = del_edges.begin(); iter != del_edges.end(); ++iter) {
+        ans_edges_from.push_back((*iter).from);
+        ans_edges_to.push_back((*iter).to);
+        ans_weights.push_back((*iter).weight);
+        ans_weight += (*iter).weight;
+    }
+}
+
+long long sum_weights(std::list<Edge>& edge_list) {
+    long long sum = 0LL;
+    std::list<Edge>::iterator iter;
+    for (iter = edge_list.begin(); iter != edge_list.end(); ++iter) {
+        sum += static_cast<long long>((*iter).weight);
+    }
+    return sum;
+}
+
+void heuristic_1(const int n_vertices,
+                 const std::vector<int>& edges_from,
+                 const std::vector<int>& edges_to,
+                 const std::vector<int>& weights,
+                 std::list<Edge>& del_edges
+                 ) {
     const int n_edges = edges_from.size();
     int from, to, weight, i, j, idx, val;
-    ans_weight = 0;
+
     // key = out_weight - in_weight
     std::vector<int> node_keys(n_vertices, 0);
     std::list<Edge> edge_list;
@@ -122,7 +171,6 @@ void d_cb(const int n_vertices,
     }
 
     std::list<Edge>::iterator iter;
-    std::list<Edge> del_edges; // delete edges
     std::vector<Edge> in_edges, out_edges;
     Set set(n_vertices); // use disjoint set to check for connectivity
     for (i = 0; i < n_vertices; ++i) {
@@ -165,14 +213,102 @@ void d_cb(const int n_vertices,
         set.Union((*max_iter).from, (*max_iter).to);
         del_edges.erase(max_iter);
     }
+}
 
-    // output deleted edges to answer
-    for (iter = del_edges.begin(); iter != del_edges.end(); ++iter) {
-        ans_edges_from.push_back((*iter).from);
-        ans_edges_to.push_back((*iter).to);
-        ans_weights.push_back((*iter).weight);
-        ans_weight += (*iter).weight;
+void heuristic_2(const int n_vertices,
+                 const std::vector<int>& edges_from,
+                 const std::vector<int>& edges_to,
+                 const std::vector<int>& weights,
+                 std::list<Edge>& del_edges
+                 ) {
+    const int n_edges = edges_from.size();
+    int from, to, weight, i, j, idx, val;
+
+    // key = out_weight - in_weight
+    std::vector<int> node_keys(n_vertices, 0);
+    std::list<Edge> edge_list;
+    std::vector<int> in_degree(n_vertices, 0);
+    std::vector<int> out_degree(n_vertices, 0);
+
+    // initialization
+    for (i = 0; i < n_edges; ++i) {
+        from = edges_from[i];
+        to = edges_to[i];
+        weight = weights[i];
+        edge_list.push_back(Edge{from, to, weight});
+        node_keys[from] += weight;
+        node_keys[to] -= weight;
+        ++out_degree[from];
+        ++in_degree[to];
     }
+
+    std::list<Edge>::iterator iter;
+    std::vector<Edge> in_edges, out_edges;
+    Set set(n_vertices); // use disjoint set to check for connectivity
+    bool should_cont;
+    for (i = 0; i < n_vertices; ++i) {
+        should_cont = 0;
+        // check for source
+        for (j = 0; j < n_vertices; ++j) {
+            if (in_degree[j] == 0) {
+                delete_edges(j, edge_list, node_keys, in_edges, out_edges,
+                             in_degree, out_degree);
+                categorize_edges(out_edges, in_edges, set, del_edges);
+                should_cont = 1;
+                break;
+            }
+        }
+        if (should_cont) {continue;}
+        // check for sink
+        for (j = 0; j < n_vertices; ++j) {
+            if (out_degree[j] == 0) {
+                delete_edges(j, edge_list, node_keys, in_edges, out_edges,
+                             in_degree, out_degree);
+                categorize_edges(in_edges, out_edges, set, del_edges);
+                should_cont = 1;
+                break;
+            }
+        }
+        if (should_cont) {continue;}
+        // extract maximum key
+        idx = 0;
+        val = INT_MIN;
+        for (j = 0; j < n_vertices; ++j) {
+            if (node_keys[j] > val) {
+                idx = j;
+                val = node_keys[j];
+            }
+        }
+        delete_edges(idx, edge_list, node_keys, in_edges, out_edges,
+                     in_degree, out_degree);
+        categorize_edges(out_edges, in_edges, set, del_edges);
+    }
+
+    // if disconnected, add edges with largest weight back
+    // std::list<Edge>::iterator max_iter;
+    // bool is_connected;
+    // while (1) {
+    //     is_connected = 1;
+    //     val = INT_MIN;
+    //     for (iter = del_edges.begin(); iter != del_edges.end(); ++iter) {
+    //         from = (*iter).from;
+    //         to = (*iter).to;
+    //         weight = (*iter).weight;
+    //         if (set.Find(from) == set.Find(to)) {
+    //             continue;
+    //         }
+    //         is_connected = 0;
+    //         if (weight > val) {
+    //             val = weight;
+    //             max_iter = iter;
+    //         }
+    //     }
+    //     if (is_connected) {
+    //         break;
+    //     }
+    //     set.Union((*max_iter).from, (*max_iter).to);
+    //     del_edges.erase(max_iter);
+    // }
 }
 
 void delete_edges(int idx,

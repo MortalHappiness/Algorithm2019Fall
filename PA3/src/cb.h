@@ -13,6 +13,13 @@ typedef struct {
     int weight;
 } Edge;
 
+// heuristic function pointer for directed graph
+typedef void (*heu_fun_ptr)(const int,
+                            const std::vector<int>&,
+                            const std::vector<int>&,
+                            const std::vector<int>&,
+                            std::list<Edge>&);
+
 // ========================================
 
 // cycle breaking
@@ -49,9 +56,22 @@ void d_cb(const int,
           std::vector<int>&,
           std::vector<int>&);
 
-// delete edges incident from or to the specified node
-// update the node keys accordingly
-// write in edges and out edges into the vectors
+long long sum_weights(std::list<Edge>&);
+
+void heuristic_1(const int,
+                 const std::vector<int>&,
+                 const std::vector<int>&,
+                 const std::vector<int>&,
+                 std::list<Edge>&
+                 );
+
+void heuristic_2(const int,
+                 const std::vector<int>&,
+                 const std::vector<int>&,
+                 const std::vector<int>&,
+                 std::list<Edge>&
+                 );
+
 void delete_edges(int,
                   std::list<Edge>&,
                   std::vector<int>&,
