@@ -116,7 +116,8 @@ void d_cb(const int n_vertices,
     }
 
     // choose the heuristic that generate minimum weight
-    int idx = 0, cur_min = INT_MAX, sum;
+    int idx = 0;
+    long long cur_min = LLONG_MAX, sum;
     for (i = 0; i < heuristics.size(); ++i) {
         sum = sum_weights(del_edges_vec[i]);
         if (sum < cur_min) {
