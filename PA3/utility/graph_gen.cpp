@@ -13,10 +13,17 @@
 #define V_MAX 100000
 #define E_MAX 50000000
 
+double DBP = 0.0;
+
 // ==================================
 
+// DBP means "D"irected graph "B"ack edge "P"ortion,
+// that is, edges need to be deleted.
+// It is a value between 0.0 and 1.0
+// and only used in directed graph
 void help_message() {
-    std::cout << "usage: ./graph_gen <output_path> <u or d> <V> <E>\n";
+    std::cout << "usage: ./graph_gen <output_path> <u> <V> <E>\n"
+                 "   or: ./graph_gen <output_path> <d> <V> <E> <DBP>\n";
 }
 
 long long edge_to_key(int x, int y) {
@@ -68,8 +75,62 @@ void gen_sparse_u(int V,
     }
 }
 
+void gen_sparse_d(int V,
+                  int E,
+                  std::vector<std::pair<int, int>>& edges,
+                  std::default_random_engine& gen,
+                  std::uniform_int_distribution<int>& dis_v,
+                  std::vector<int>& weights,
+                  int& lower_bound
+                  ) {
+    std::unordered_set<long long> edge_keys;
+    long long key;
+    int i, u, v, temp;
+    lower_bound = 0;
+
+    // generate a connected component with weight 100
+    std::vector<int> idxs;
+    for (i = 0; i < V; ++i) {
+        idxs.push_back(i);
+    }
+    std::random_shuffle(idxs.begin(), idxs.end());
+    for (i = 0; i < V-1; ++i) {
+        // here edge_keys store the topological sorted order index
+        edge_keys.insert(edge_to_key(i, i+1));
+        edges.push_back(std::make_pair(idxs[i], idxs[i+1]));
+        weights.push_back(100);
+    }
+    // generate edges until E
+    std::uniform_real_distribution<double> dis_p(0.0, 1.0);
+    while (edges.size() != E) {
+        u = dis_v(gen);
+        do {
+            v = dis_v(gen);
+        } while (v == u);
+        if (u > v) {
+            temp = u; u = v; v = temp;
+        }
+        if (dis_p(gen) > DBP) {
+            key = edge_to_key(u, v);
+            if (edge_keys.find(key) == edge_keys.end()) {
+                edge_keys.insert(key);
+                edges.push_back(std::make_pair(idxs[u], idxs[v]));
+                weights.push_back(100);
+            }
+        } else { // back edge
+            key = edge_to_key(v, u);
+            if (edge_keys.find(key) == edge_keys.end()) {
+                edge_keys.insert(key);
+                edges.push_back(std::make_pair(idxs[v], idxs[u]));
+                weights.push_back(-100);
+                lower_bound += -100;
+            }
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
-    if (argc != 5) {
+    if (argc != 5 && argc != 6) {
         help_message();
         return 0;
     }
@@ -77,6 +138,14 @@ int main(int argc, char *argv[]) {
     char graph_type = argv[2][0];
     int V = atoi(argv[3]);
     int E = atoi(argv[4]);
+
+    if ((graph_type == 'u' && argc == 6) || (graph_type == 'd' && argc == 5)) {
+        help_message();
+        return 0;
+    }
+    if (graph_type == 'd') {
+        DBP = atof(argv[5]);
+    }
 
     srand(time(0));
     std::random_device rd;
@@ -102,6 +171,7 @@ int main(int argc, char *argv[]) {
     }
 
     std::vector<std::pair<int, int>> edges;
+    std::vector<int> weights;
 
     switch (graph_type) {
         case 'u':
@@ -112,8 +182,13 @@ int main(int argc, char *argv[]) {
             gen_sparse_u(V, E, edges, gen, dis_v);
             break;
         case 'd':
-            std::cout << "Currently not supported!" << std::endl;
-            return 0;
+            if (static_cast<long long>(E) >
+                static_cast<long long>(V) * static_cast<long long>(V-1)) {
+                std::cout << "Too many edges!" << std::endl;
+            }
+            int lower_bound;
+            gen_sparse_d(V, E, edges, gen, dis_v, weights, lower_bound);
+            std::cout << "Lower Bound: " << lower_bound << std::endl;
             break;
     }
 
@@ -126,8 +201,12 @@ int main(int argc, char *argv[]) {
     int i;
     for (i = 0; i < E; ++i) {
         fout << edges[i].first << " "
-             << edges[i].second << " "
-             << dis_w(gen) << "\n";
+             << edges[i].second << " ";
+        if (graph_type == 'u') {
+            fout << dis_w(gen) << "\n";
+        } else {
+            fout << weights[i] << "\n";
+        }
     }
     fout << 0;
     fout.close();
