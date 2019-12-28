@@ -13,6 +13,13 @@ typedef struct {
     int weight;
 } Edge;
 
+// heuristic function pointer for directed graph
+typedef void (*heu_fun_ptr)(const int,
+                            const std::vector<int>&,
+                            const std::vector<int>&,
+                            const std::vector<int>&,
+                            std::list<Edge>&);
+
 // ========================================
 
 // cycle breaking
@@ -38,6 +45,47 @@ void MST(const int,
 void counting_sort(const std::vector<Edge>&,
                    std::vector<Edge>&,
                    int);
+
+// directed graph cycle breaking
+void d_cb(const int,
+          const std::vector<int>&,
+          const std::vector<int>&,
+          const std::vector<int>&,
+          long long&,
+          std::vector<int>&,
+          std::vector<int>&,
+          std::vector<int>&);
+
+long long sum_weights(std::list<Edge>&);
+
+void heuristic_1(const int,
+                 const std::vector<int>&,
+                 const std::vector<int>&,
+                 const std::vector<int>&,
+                 std::list<Edge>&
+                 );
+
+void heuristic_2(const int,
+                 const std::vector<int>&,
+                 const std::vector<int>&,
+                 const std::vector<int>&,
+                 std::list<Edge>&
+                 );
+
+void delete_edges(int,
+                  std::list<Edge>&,
+                  std::vector<int>&,
+                  std::vector<Edge>&,
+                  std::vector<Edge>&,
+                  std::vector<int>&,
+                  std::vector<int>&
+                  );
+
+void categorize_edges(std::vector<Edge>&,
+                      std::vector<Edge>&,
+                      Set&,
+                      std::list<Edge>&
+                      );
 
 // ========================================
 

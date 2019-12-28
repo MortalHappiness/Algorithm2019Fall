@@ -101,9 +101,11 @@ void d_cb(const int n_vertices,
           std::vector<int>& ans_weights
          ) {
     int i;
-    std::vector<heu_fun_ptr> heuristics = {&heuristic_1, &heuristic_2};
+    std::vector<heu_fun_ptr> heuristics;
+    heuristics.push_back(&heuristic_1);
+    heuristics.push_back(&heuristic_2);
     i = heuristics.size();
-    std::vector<std::list<Edge>> del_edges_vec(i);
+    std::vector< std::list<Edge> > del_edges_vec(i);
     std::list<Edge>::iterator iter;
 
     // run different heuristics
