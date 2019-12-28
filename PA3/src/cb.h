@@ -49,6 +49,24 @@ void d_cb(const int,
           std::vector<int>&,
           std::vector<int>&);
 
+// delete edges incident from or to the specified node
+// update the node keys accordingly
+// write in edges and out edges into the vectors
+void delete_edges(int,
+                  std::list<Edge>&,
+                  std::vector<int>&,
+                  std::vector<Edge>&,
+                  std::vector<Edge>&,
+                  std::vector<int>&,
+                  std::vector<int>&
+                  );
+
+void categorize_edges(std::vector<Edge>&,
+                      std::vector<Edge>&,
+                      Set&,
+                      std::list<Edge>&
+                      );
+
 // ========================================
 
 #endif
