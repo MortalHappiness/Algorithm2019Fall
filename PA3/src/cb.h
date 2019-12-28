@@ -39,6 +39,16 @@ void counting_sort(const std::vector<Edge>&,
                    std::vector<Edge>&,
                    int);
 
+// directed graph cycle breaking
+void d_cb(const int,
+          const std::vector<int>&,
+          const std::vector<int>&,
+          const std::vector<int>&,
+          long long&,
+          std::vector<int>&,
+          std::vector<int>&,
+          std::vector<int>&);
+
 // ========================================
 
 #endif
